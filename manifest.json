@@ -1,0 +1,18 @@
+{
+    "name": "URCDD",
+    "description": "A model trained on a comprehensive collection of images extracted from various games on the Roblox platform.",
+    "author": "xeon",
+    "model": {
+        "baseModel": "yolov8n"
+    },
+    "dataset": {
+        "path": "https://app.roboflow.com/xeon/urcdd/1",
+        "workspace": "xeon",
+        "project": "urcdd",
+        "version": 3
+    },
+    "version": {
+        "name": "0.0.3",
+        "run": "train3"
+    }
+}

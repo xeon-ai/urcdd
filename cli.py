@@ -4,6 +4,7 @@ from commands.init import init
 from commands.update import update
 from commands.train import train
 from commands.publish import publish
+from commands.predict import predict
 
 def main():
     """The entrypoint for the script"""
@@ -28,6 +29,11 @@ def main():
     publish_parser.add_argument('--version', help='The new version of the model', type=int)
     publish_parser.add_argument('--roboflow', help='Whether or not to publish to Roboflow', action='store_true')
     publish_parser.set_defaults(func=publish)
+
+    predict_parser = subparsers.add_parser('predict', description='Predict on an image')
+    predict_parser.add_argument('--image', help='The image to predict on', required=True)
+    predict_parser.add_argument('--model', help='The model to use for prediction', required=True)
+    predict_parser.set_defaults(func=predict)
 
     args = parser.parse_args()
     args.func(args)

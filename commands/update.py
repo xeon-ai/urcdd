@@ -40,6 +40,16 @@ def update_dataset(dataset, base_model):
     # Download the dataset
     version.download(model_format=base_model[:-1], location='./dataset/')
 
+    # Update the manifest file with the new dataset version
+    with open('manifest.json', 'r') as file:
+        manifest = json.load(file)
+
+    manifest['dataset']['version'] = str(latest_version)
+
+    # Write the manifest file
+    with open('manifest.json', 'w') as file:
+        json.dump(manifest, file, indent=4)
+
     # Update the data.yaml file with the new dataset path
     with open('./dataset/data.yaml', 'r') as file:
         data = yaml.safe_load(file)

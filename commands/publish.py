@@ -1,7 +1,13 @@
 import json
 import os
+import roboflow
+import shutil
 
+from dotenv import load_dotenv
 from .utils import get_input, get_input_boolean
+
+# Load environment variables from .env file
+load_dotenv() 
 
 def get_run(name):
     """
@@ -12,6 +18,8 @@ def get_run(name):
         # Get the most recent run
         runs = os.listdir('./runs/detect/')
         runs.sort()
+
+        runs = [x for x in runs if x.startswith('train')]
         
         return runs[-1]
     
@@ -38,7 +46,17 @@ def publish(args):
     # Check if a model with the same version already exists
     if not (f"{version}.onnx" in os.listdir('./publish/') and not get_input_boolean('A model with the same version already exists. Do you want to overwrite it?')):
         # Move the ONNX model to the publish directory
-        os.rename(f'./runs/detect/{run}/weights/best.onnx', f'./publish/{version}.onnx')
+        shutil.copyfile(f'./runs/detect/{run}/weights/best.onnx', f'./publish/{version}.onnx')
+
+    if manifest['dataset'].get('workspace') is not None:
+        # We know that this is a Roboflow dataset, so create a Roboflow client
+        client = roboflow.Roboflow(api_key=os.environ['ROBOFLOW_API_KEY'])
+
+        workspace = client.workspace(manifest['dataset']['workspace'])
+        project = workspace.project(manifest['dataset']['project'])
+        version = project.version(int(manifest['dataset']['version']))
+
+        version.deploy(manifest['model']['baseModel'][:-1], f"./runs/detect/{run}")
 
     print('Model published successfully.')
 
